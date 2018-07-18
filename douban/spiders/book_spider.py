@@ -35,7 +35,7 @@ class BookSpider(Spider):
         """
         # TODO 提取书籍信息
 
-
         # TODO 组装书评页请求
 
+        print('<<<', response.url, '>>>')
         pass

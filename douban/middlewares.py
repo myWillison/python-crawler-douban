@@ -5,6 +5,8 @@
 # See documentation in:
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 
+import random
+
 from scrapy import signals
 
 
@@ -101,3 +103,20 @@ class DoubanDownloaderMiddleware(object):
 
     def spider_opened(self, spider):
         spider.logger.info('Spider opened: %s' % spider.name)
+
+
+class RandomChangeUserAgentMiddleware(object):
+    """
+    随机变换UserAgent请求消息头中间件
+    """
+
+    def __init__(self, user_agent_list):
+        self.user_agent_list = user_agent_list
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls(crawler.settings.get('USER_AGENT_LIST'))
+
+    def process_request(self, request, spider):
+        user_agent = random.choice(self.user_agent_list)
+        request.headers['User-Agent'] = user_agent
