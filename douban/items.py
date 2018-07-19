@@ -15,16 +15,20 @@ class BookItem(scrapy.Item):
 
     # 书籍在豆瓣编号(ID)
     book_number = scrapy.Field()
+    # 书名
+    book_name = scrapy.Field()
+    # 副标题
+    book_subtitle = scrapy.Field()
     # 封面
     cover = scrapy.Field()
-    # 作者
-    author = scrapy.Field()
+    # 作者列表，可以有多个
+    authors = scrapy.Field()
     # 出版社
     press = scrapy.Field()
     # 出品方
     publisher = scrapy.Field()
-    # 原作者
-    origin_author = scrapy.Field()
+    # 原作名
+    origin_name = scrapy.Field()
     # 译者
     translator = scrapy.Field()
     # 出版年
@@ -42,7 +46,7 @@ class BookItem(scrapy.Item):
     # 评分
     score = scrapy.Field()
     # 评价人数
-    evaluation_number = scrapy.Field()
+    votes = scrapy.Field()
     # 评星比例列表
     stars = scrapy.Field()
     # 标签列表
@@ -58,6 +62,8 @@ class BookCommentItem(scrapy.Item):
     图书书评信息
     """
 
+    # 书籍在豆瓣编号(ID)
+    book_number = scrapy.Field()
     # 用户头像
     avatar = scrapy.Field()
     # 用户昵称
