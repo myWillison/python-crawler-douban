@@ -42,7 +42,7 @@ class MongoPipeline(object):
         if 'book_number' in item and 'book_name' in item:
             self.process_book_item(item, spider)
         elif 'book_number' in item and 'nickname' in item:
-            pass
+            self.process_book_comment(item, spider)
         else:
             # TODO 电影、音乐暂略
             pass
@@ -50,4 +50,7 @@ class MongoPipeline(object):
         return item
 
     def process_book_item(self, item, spider):
-        self.db.get_collection('books').insert_one(dict(item))
+        self.db.get_collection('book').insert_one(dict(item))
+
+    def process_book_comment(self, item, spider):
+        self.db.get_collection('book_comment').insert_one(dict(item))

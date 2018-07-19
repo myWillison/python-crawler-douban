@@ -2,7 +2,7 @@
 import scrapy
 from scrapy import Spider
 
-from douban.items import BookItem
+from douban.items import BookItem, BookCommentItem
 
 
 class BookSpider(Spider):
@@ -15,11 +15,11 @@ class BookSpider(Spider):
         Top250列表页非常规律，每页25条记录，所以后一页查询参数为当前页查询参数+25
         :return:
         """
-        # for i in range(0, 250, 25):
-        #     yield scrapy.Request('https://book.douban.com/top250?start={}'.format(i), self.parse)
+        for i in range(0, 250, 25):
+            yield scrapy.Request('https://book.douban.com/top250?start={}'.format(i), self.parse)
 
-        # TODO 调试阶段，只用一个URL
-        yield scrapy.Request('https://book.douban.com/top250?start={}'.format(0), self.parse)
+        # # 调试阶段，只用一个URL
+        # yield scrapy.Request('https://book.douban.com/top250?start={}'.format(0), self.parse)
 
     def parse(self, response):
         """
@@ -84,10 +84,9 @@ class BookSpider(Spider):
 
         yield self._parse_subject_content(infos, data)
 
-        # TODO 暂不处理书评页
-        # # 组装书评页请求(书评第一页，后续页面URL由书评页提供)
-        # comment_url = response.url + 'comments/new?p=1'
-        # yield response.follow(comment_url, self.parse_comment)
+        # 组装书评页请求(书评第一页，后续页面URL由书评页提供)
+        comment_url = response.url + 'comments/new?p=1'
+        yield response.follow(comment_url, self.parse_comment)
 
     def _parse_subject_content(self, infos, data):
         # 记录当前迭代的位置(对应data的键)
@@ -153,4 +152,34 @@ class BookSpider(Spider):
 
     def parse_comment(self, response):
 
-        pass
+        # 提取下一页URL
+        next_url = response.xpath('//ul[@class="comment-paginator"]//a[last()]/@href')
+        next_url = response.urljoin(next_url)
+        yield response.follow(next_url, self.parse_comment)
+
+        # 提取书籍编号
+        book_number = int(response.url.split('/')[-3])
+
+        # 提取书评数据
+        for li in response.xpath('//div[@id="comments"]/ul/li[@class="comment-item"]'):
+            item = BookCommentItem()
+            item['book_number'] = book_number
+            # 提取头像
+            item['avatar'] = li.xpath('self::*//div[@class="avatar"]/a/img/@src').extract_first()
+            # 提取昵称
+            item['nickname'] = li.xpath('self::*//span[@class="comment-info"]/a/text()').extract_first()
+            # 提取评星(有些可能没有)
+            item['star'] = li.xpath('self::*//span[@class="comment-info"]/span[contains(@class, "rating")]/@class').re(
+                r'allstar(\d)0\s+rating')
+            if item['star']:
+                item['star'] = int(item['star'][0])
+            # 提取评论日期
+            item['comment_date'] = li.xpath('self::*//span[@class="comment-info"]/span[last()]/text()').extract_first()
+            # 提取点赞数
+            item['votes'] = li.xpath('self::*//span[@class="comment-vote"]/span/text()').extract_first()
+            if item['votes']:
+                item['votes'] = int(item['votes'])
+            # 提取评语
+            item['content'] = li.xpath('self::*//p[@class="comment-content"]/span/text()').extract_first()
+
+            yield item

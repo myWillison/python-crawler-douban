@@ -99,7 +99,7 @@ DEFAULT_REQUEST_HEADERS = {
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     'douban.middlewares.RandomChangeUserAgentMiddleware': 100,
-    'douban.middlewares.RandomChangeProxyIpMiddleware': 120,
+    # 'douban.middlewares.RandomChangeProxyIpMiddleware': 120,
     # 'douban.middlewares.DoubanDownloaderMiddleware': 543,
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
 }
