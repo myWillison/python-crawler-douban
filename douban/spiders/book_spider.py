@@ -15,11 +15,11 @@ class BookSpider(Spider):
         Top250列表页非常规律，每页25条记录，所以后一页查询参数为当前页查询参数+25
         :return:
         """
-        for i in range(0, 250, 25):
-            yield scrapy.Request('https://book.douban.com/top250?start={}'.format(i), self.parse)
+        # for i in range(0, 250, 25):
+        #     yield scrapy.Request('https://book.douban.com/top250?start={}'.format(i), self.parse)
 
-        # # 调试阶段，只用一个URL
-        # yield scrapy.Request('https://book.douban.com/top250?start={}'.format(0), self.parse)
+        # 调试阶段，只用一个URL
+        yield scrapy.Request('https://book.douban.com/top250?start={}'.format(0), self.parse)
 
     def parse(self, response):
         """
@@ -153,7 +153,7 @@ class BookSpider(Spider):
     def parse_comment(self, response):
 
         # 提取下一页URL
-        next_url = response.xpath('//ul[@class="comment-paginator"]//a[last()]/@href')
+        next_url = response.xpath('//ul[@class="comment-paginator"]//a[last()]/@href').extract_first()
         next_url = response.urljoin(next_url)
         yield response.follow(next_url, self.parse_comment)
 
