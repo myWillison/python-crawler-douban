@@ -146,6 +146,8 @@ class BookSpider(Spider):
             if '元' in data['price']:
                 data['price'] = data['price'].split('元')[0]
             data['price'] = float(data['price'])
+        if 'pages' in data:
+            data['pages'] = int(data['pages'])
 
         return BookItem(data)
 

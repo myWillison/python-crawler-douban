@@ -120,3 +120,18 @@ class RandomChangeUserAgentMiddleware(object):
     def process_request(self, request, spider):
         user_agent = random.choice(self.user_agent_list)
         request.headers['User-Agent'] = user_agent
+
+
+class RandomChangeProxyIpMiddleware(object):
+    """
+    随机变换代理IP中间件
+    """
+
+    def process_request(self, request, spider):
+        # TODO 后面将改为从动态代理IP池中随机获取，测试阶段写死一个，避免本机被锁定
+        # 代理IP来源于西刺代理，不过质量并不高，很多不能用
+        # http://www.xicidaili.com/nn/
+        # request.meta['proxy'] = 'http://118.190.95.43:9001'
+        # 后改为从 https://github.com/jhao104/proxy_pool 提供的测试地址获取
+        # http://123.207.35.36:5010/get/
+        request.meta['proxy'] = 'http://197.243.34.228:3128'
