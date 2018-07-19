@@ -134,9 +134,9 @@ class RandomChangeProxyIpMiddleware(object):
     @classmethod
     def from_crawler(cls, crawler):
         # 程序启动时，动态获取一批代理IP，供后续随机切换使用
-        # 临时使用这个网址动态获取10个动态代理IP，随机切换使用，后面换成自实现的
-        proxies = [requests.get('http://123.207.35.36:5010/get/').text for _ in range(10)]
-        print(proxies)
+        proxies = ['181.30.3.234:3128', '58.11.67.120:3128', '201.166.23.226:8080', '109.197.188.8:8080',
+                   '88.99.149.188:31288', '93.87.28.42:53281', '49.48.130.147:8080', '212.8.252.110:1080',
+                   '101.96.10.4:80', '101.96.10.63:8080']
         return cls(proxies)
 
     def process_request(self, request, spider):
